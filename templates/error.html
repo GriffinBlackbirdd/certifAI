@@ -1,0 +1,94 @@
+<!-- templates/error.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdaptLearn - Error</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --primary: #2d4059;
+        --secondary: #37a6b8;
+        --error: #f44336;
+        --background: #f5f7fa;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--background), #c3cfe2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .error-container {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .error-icon {
+        font-size: 4rem;
+        color: var(--error);
+        margin-bottom: 1.5rem;
+      }
+
+      .error-title {
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .error-message {
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(45deg, var(--secondary), var(--primary));
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: transform 0.3s ease;
+      }
+
+      .back-button:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-container">
+      <i class="fas fa-exclamation-circle error-icon"></i>
+      <h1 class="error-title">Oops! Something went wrong</h1>
+      <p class="error-message">{{ error_message }}</p>
+      <a href="/courses" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Return to Courses
+      </a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdaptLearn - Courses</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      :root {
+        --primary: #2d4059;
+        --secondary: #37a6b8;
+        --accent: #ea5455;
+        --background: #f5f7fa;
+        --card: #ffffff;
+        --text: #2d4059;
+        --text-light: #557a95;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--background), #c3cfe2);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 2rem;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        opacity: 0;
+        animation: fadeIn 1s ease forwards;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+
+      .header h1 {
+        font-size: 2.8rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .header h1::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        border-radius: 2px;
+      }
+
+      .header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 1.5rem auto;
+        line-height: 1.6;
+      }
+
+      .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        padding: 1rem;
+      }
+
+      .course-card {
+        background: var(--card);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        padding-bottom: 70px;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: slideUp 0.6s ease forwards;
+      }
+
+      .course-card:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+      .course-card:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+      .course-card:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      .course-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .course-image {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      .course-image::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          rgba(45, 64, 89, 0.8),
+          rgba(55, 166, 184, 0.8)
+        );
+        z-index: 1;
+      }
+
+      .course-image .course-icon {
+        position: relative;
+        z-index: 2;
+        animation: pulse 2s infinite;
+      }
+
+      .course-content {
+        padding: 2rem;
+      }
+
+      .course-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .course-title i {
+        color: var(--secondary);
+        font-size: 1.2rem;
+      }
+
+      .course-description {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .course-stats {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .stat i {
+        color: var(--secondary);
+      }
+
+      .course-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        background: white;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .start-course-btn {
+        padding: 0.8rem 2rem;
+        background: linear-gradient(45deg, var(--secondary), var(--primary));
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .start-course-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .start-course-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(55, 166, 184, 0.4);
+      }
+
+      .start-course-btn:hover::before {
+        left: 100%;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .floating-particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        background: linear-gradient(45deg, var(--secondary), var(--primary));
+        border-radius: 50%;
+        opacity: 0.1;
+        animation: float 20s linear infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        100% {
+          transform: translateY(-100vh) rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .courses-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .course-card {
+          margin: 0 auto;
+          max-width: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-particles">
+      <!-- Particles will be added via JavaScript -->
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <h1>Available Courses</h1>
+        <p>
+          Begin your learning journey with our comprehensive certification
+          courses
+        </p>
+      </div>
+
+      <div class="courses-grid">
+        <!-- DP-900 Card -->
+        <div class="course-card">
+          <div class="course-image" style="background-color: #2d4059">
+            <i class="fas fa-database fa-3x"></i>
+          </div>
+          <div class="course-content">
+            <h3 class="course-title">SAMPLE COURSE</h3>
+            <p class="course-description">Sample course for testing purposes</p>
+          </div>
+          <div class="course-footer">
+            <a href="/course/dp900/customize" class="start-course-btn"
+              >Start Course</a
+            >
+          </div>
+        </div>
+
+        <!-- AI-900 Card -->
+        <div class="course-card">
+          <div class="course-image" style="background-color: #37a6b8">
+            <i class="fas fa-brain fa-3x"></i>
+          </div>
+          <div class="course-content">
+            <h3 class="course-title">Azure AI Fundamentals</h3>
+            <p class="course-description">
+              Get started with artificial intelligence on Azure. Learn about AI
+              workloads and considerations, fundamental principles of machine
+              learning on Azure, and features of computer vision workloads on
+              Azure.
+            </p>
+          </div>
+          <div class="course-footer">
+            <a href="/course/ai900/customize" class="start-course-btn"
+              >Start Course</a
+            >
+          </div>
+        </div>
+
+        <!-- AZ-900 Card -->
+        <div class="course-card">
+          <div class="course-image" style="background-color: #557a95">
+            <i class="fas fa-cloud fa-3x"></i>
+          </div>
+          <div class="course-content">
+            <h3 class="course-title">Azure Fundamentals</h3>
+            <p class="course-description">
+              Build your foundation of cloud computing and Azure, and learn core
+              Azure concepts, services, security, privacy, compliance, and
+              trust.
+            </p>
+          </div>
+          <div class="course-footer">
+            <a href="/course/az900/customize" class="start-course-btn"
+              >Start Course</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Add floating particles
+      const particlesContainer = document.querySelector(".floating-particles");
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.width = Math.random() * 10 + 5 + "px";
+        particle.style.height = particle.style.width;
+        particle.style.left = Math.random() * 100 + "vw";
+        particle.style.top = Math.random() * 100 + "vh";
+        particle.style.animationDuration = Math.random() * 10 + 15 + "s";
+        particlesContainer.appendChild(particle);
+      }
+    </script>
+  </body>
+</html>

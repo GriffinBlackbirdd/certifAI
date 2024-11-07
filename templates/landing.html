@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdaptLearn - Adaptive Learning Platform</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        color: #2d4059;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+      }
+
+      .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 1200px;
+      }
+
+      .logo {
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, #2d4059, #37a6b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .tagline {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards 0.5s;
+        color: #2d4059;
+      }
+
+      .description {
+        margin-top: 2rem;
+        line-height: 1.6;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards 1s;
+        color: #2d4059;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+      }
+
+      .feature-card {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        animation: fadeIn 0.8s ease forwards 1.5s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .feature-card h3 {
+        color: #2d4059;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card p {
+        color: #557a95;
+      }
+
+      .start-learning-btn {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(45deg, #37a6b8, #2d4059);
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+        margin-top: 2rem;
+        opacity: 0;
+        animation: fadeUp 0.8s ease forwards 2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .start-learning-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .start-learning-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(45, 64, 89, 0.3);
+      }
+
+      .start-learning-btn:hover::before {
+        left: 100%;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(45, 64, 89, 0.15);
+        border-radius: 50%;
+        animation: moveParticle 20s linear infinite;
+      }
+
+      @keyframes moveParticle {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(100vw, -100vh);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles">
+      <!-- Particles will be added via JavaScript -->
+    </div>
+
+    <div class="container">
+      <h1 class="logo">AdaptLearn</h1>
+      <p class="tagline">Personalized Learning, Unlimited Potential</p>
+      <p class="description">
+        Discover a revolutionary learning platform that adapts to your unique
+        needs. Using advanced AI technology, AdaptLearn creates personalized
+        learning paths that evolve with your progress, making education more
+        effective and engaging than ever before.
+      </p>
+
+      <div class="features">
+        <div class="feature-card">
+          <h3>Adaptive Learning</h3>
+          <p>Our AI-powered system adjusts to your learning style and pace</p>
+        </div>
+        <div class="feature-card">
+          <h3>Interactive Content</h3>
+          <p>
+            Engage with dynamic materials that make learning fun and effective
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Real-time Progress</h3>
+          <p>Track your journey with detailed analytics and insights</p>
+        </div>
+      </div>
+
+      <a href="/courses" class="start-learning-btn">Start Learning</a>
+    </div>
+
+    <script>
+      // Add floating particles
+      const particlesContainer = document.querySelector(".particles");
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement("div");
+        particle.className = "particle";
+        particle.style.left = Math.random() * 100 + "vw";
+        particle.style.top = Math.random() * 100 + "vh";
+        particle.style.animationDelay = Math.random() * 20 + "s";
+        particlesContainer.appendChild(particle);
+      }
+    </script>
+  </body>
+</html>

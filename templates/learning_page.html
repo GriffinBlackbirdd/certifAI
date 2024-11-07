@@ -1,0 +1,1253 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <title>AdaptLearn - Course Learning</title>
+            <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            />
+            <style>
+              @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+              :root {
+                --primary: #2d4059;
+                --secondary: #37a6b8;
+                --accent: #ea5455;
+                --background: #f5f7fa;
+                --text: #2d4059;
+                --text-light: #557a95;
+                --card: #ffffff;
+                --success: #4caf50;
+                --error: #f44336;
+                --warning: #ff9800;
+              }
+
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Poppins", sans-serif;
+              }
+
+              body {
+                background: linear-gradient(135deg, var(--background), #c3cfe2);
+                color: var(--text);
+                min-height: 100vh;
+              }
+
+              /* Debug Console */
+              .debug-console {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: #fff;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: monospace;
+                font-size: 12px;
+                max-width: 400px;
+                max-height: 200px;
+                overflow-y: auto;
+                display: none;
+                z-index: 1000;
+              }
+
+              .debug-console.visible {
+                display: block;
+              }
+
+              /* Container Layout */
+              .learning-container {
+                display: flex;
+                min-height: 100vh;
+              }
+
+              /* Sidebar Styles */
+              .sidebar {
+                width: 300px;
+                background: white;
+                padding: 2rem;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                height: 100vh;
+                overflow-y: auto;
+                z-index: 100;
+                transition: transform 0.3s ease;
+              }
+
+              .course-title {
+                font-size: 1.5rem;
+                color: var(--primary);
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid var(--secondary);
+              }
+
+              .module-nav {
+                list-style: none;
+              }
+
+              .module-nav-item {
+                margin-bottom: 1rem;
+              }
+
+              .module-nav-link {
+                display: flex;
+                align-items: center;
+                padding: 1rem;
+                border-radius: 8px;
+                color: var(--text);
+                text-decoration: none;
+                transition: all 0.3s ease;
+              }
+
+              .module-nav-link:hover {
+                background: rgba(55, 166, 184, 0.1);
+              }
+
+              .module-nav-link.active {
+                background: var(--secondary);
+                color: white;
+              }
+
+              .module-icon {
+                margin-right: 1rem;
+              }
+
+              /* Main Content Styles */
+              .main-content {
+                margin-left: 300px;
+                padding: 2rem;
+                flex-grow: 1;
+              }
+
+              .module {
+                background: white;
+                border-radius: 15px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeIn 0.5s ease forwards;
+              }
+
+              .module-header {
+                margin-bottom: 2rem;
+              }
+
+              .module-title {
+                font-size: 2rem;
+                color: var(--primary);
+                margin-bottom: 1rem;
+              }
+
+              .module-summary {
+                color: var(--text-light);
+                font-size: 1.1rem;
+                line-height: 1.6;
+              }
+
+              /* Key Points Section */
+              .key-points {
+                background: rgba(55, 166, 184, 0.1);
+                padding: 1.5rem;
+                border-radius: 10px;
+                margin: 2rem 0;
+              }
+
+              .key-points-title {
+                color: var(--secondary);
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              .key-points-list {
+                list-style: none;
+              }
+
+              .key-points-list li {
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              .key-points-list li:before {
+                content: "•";
+                color: var(--secondary);
+              }
+
+              .module-content {
+                line-height: 1.8;
+                margin-bottom: 2rem;
+              }
+
+              .step i {
+                color: var(--secondary);
+                font-size: 1.2rem;
+              }
+
+              /* Mobile Responsiveness */
+              @media (max-width: 768px) {
+                .sidebar {
+                  transform: translateX(-100%);
+                }
+
+                .sidebar.active {
+                  transform: translateX(0);
+                }
+
+                .main-content {
+                  margin-left: 0;
+                }
+
+                .module {
+                  padding: 1rem;
+                }
+
+                .module-title {
+                  font-size: 1.5rem;
+                }
+              }
+
+              /* Animations */
+              @keyframes fadeIn {
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+
+              @keyframes spin {
+                to {
+                  transform: rotate(360deg);
+                }
+              }
+
+              @keyframes pulse {
+                0%,
+                100% {
+                  opacity: 1;
+                }
+                50% {
+                  opacity: 0.8;
+                }
+              }
+
+              @keyframes slideIn {
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+              .quiz-section {
+                background: white;
+                border-radius: 15px;
+                padding: 2rem;
+                margin-top: 3rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+              }
+
+              .quiz-header {
+                text-align: center;
+                margin-bottom: 2rem;
+              }
+
+              .quiz-title {
+                color: var(--primary);
+                font-size: 1.8rem;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+              }
+
+              .quiz-title i {
+                color: var(--secondary);
+              }
+
+              .quiz-description {
+                color: var(--text-light);
+                font-size: 1.1rem;
+              }
+
+              /* Loading Animation */
+              .quiz-loading {
+                text-align: center;
+                padding: 3rem;
+              }
+
+              .quiz-loading-animation {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 2rem;
+              }
+
+              .loading-spinner {
+                width: 100%;
+                height: 100%;
+                border: 4px solid rgba(55, 166, 184, 0.1);
+                border-top: 4px solid var(--secondary);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+              }
+
+              .loading-effects {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+              }
+
+              .effect {
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background: rgba(55, 166, 184, 0.2);
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+              }
+
+              .effect:nth-child(1) {
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                animation-delay: 0s;
+              }
+              .effect:nth-child(2) {
+                top: 50%;
+                right: -10px;
+                transform: translateY(-50%);
+                animation-delay: 0.5s;
+              }
+              .effect:nth-child(3) {
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                animation-delay: 1s;
+              }
+
+              .loading-text {
+                font-size: 1.2rem;
+                color: var(--primary);
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+              }
+
+              .loading-subtext {
+                color: var(--text-light);
+                font-size: 0.9rem;
+              }
+
+              /* Quiz Questions */
+              .quiz-question {
+                background: rgba(55, 166, 184, 0.05);
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+                transform: translateY(20px);
+                opacity: 0;
+                animation: slideIn 0.5s ease forwards;
+              }
+
+              .quiz-question:nth-child(1) {
+                animation-delay: 0.1s;
+              }
+              .quiz-question:nth-child(2) {
+                animation-delay: 0.2s;
+              }
+              .quiz-question:nth-child(3) {
+                animation-delay: 0.3s;
+              }
+              .quiz-question:nth-child(4) {
+                animation-delay: 0.4s;
+              }
+              .quiz-question:nth-child(5) {
+                animation-delay: 0.5s;
+              }
+
+              .question-header {
+                margin-bottom: 1.5rem;
+              }
+
+              .question-number {
+                display: inline-block;
+                background: var(--secondary);
+                color: white;
+                padding: 0.3rem 1rem;
+                border-radius: 15px;
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
+              }
+
+              .question-text {
+                font-size: 1.1rem;
+                color: var(--primary);
+                font-weight: 500;
+                line-height: 1.5;
+              }
+
+              /* Options */
+              .options-container {
+                display: grid;
+                gap: 1rem;
+              }
+
+              .option-item {
+                transform: translateX(-20px);
+                opacity: 0;
+                animation: slideInOption 0.5s ease forwards;
+              }
+
+              .option-item:nth-child(1) {
+                animation-delay: 0.2s;
+              }
+              .option-item:nth-child(2) {
+                animation-delay: 0.3s;
+              }
+              .option-item:nth-child(3) {
+                animation-delay: 0.4s;
+              }
+              .option-item:nth-child(4) {
+                animation-delay: 0.5s;
+              }
+
+              .option-label {
+                display: flex;
+                align-items: center;
+                padding: 1rem;
+                background: white;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+              }
+
+              .option-label:hover {
+                border-color: var(--secondary);
+                transform: translateX(5px);
+              }
+
+              .option-radio {
+                display: none;
+              }
+
+              .radio-custom {
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--secondary);
+                border-radius: 50%;
+                margin-right: 1rem;
+                position: relative;
+                transition: all 0.3s ease;
+              }
+
+              .radio-custom::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                width: 10px;
+                height: 10px;
+                background: var(--secondary);
+                border-radius: 50%;
+                transition: transform 0.2s ease;
+              }
+
+              .option-radio:checked + .radio-custom::after {
+                transform: translate(-50%, -50%) scale(1);
+              }
+
+              .option-text {
+                flex-grow: 1;
+              }
+
+              /* Submit Button */
+              .submit-quiz {
+                background: linear-gradient(
+                  45deg,
+                  var(--secondary),
+                  var(--primary)
+                );
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                font-size: 1.1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: block;
+                margin: 2rem auto 0;
+                position: relative;
+                overflow: hidden;
+              }
+
+              .submit-quiz:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(55, 166, 184, 0.3);
+              }
+
+              .submit-quiz::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                  120deg,
+                  transparent,
+                  rgba(255, 255, 255, 0.2),
+                  transparent
+                );
+                transition: 0.5s;
+              }
+
+              .submit-quiz:hover::before {
+                left: 100%;
+              }
+
+              .button-loading {
+                display: none;
+              }
+
+              .submit-quiz.loading .button-content {
+                display: none;
+              }
+
+              .submit-quiz.loading .button-loading {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              /* Quiz Result */
+              .quiz-result {
+                margin-top: 2rem;
+                padding: 1.5rem;
+                border-radius: 10px;
+                text-align: center;
+                transform: scale(0.9);
+                opacity: 0;
+                transition: all 0.3s ease;
+              }
+
+              .quiz-result.show {
+                transform: scale(1);
+                opacity: 1;
+              }
+
+              .quiz-result.success {
+                background: rgba(76, 175, 80, 0.1);
+                border: 1px solid rgba(76, 175, 80, 0.2);
+                color: var(--success);
+              }
+
+              .quiz-result.error {
+                background: rgba(244, 67, 54, 0.1);
+                border: 1px solid rgba(244, 67, 54, 0.2);
+                color: var(--error);
+              }
+
+              /* Animations */
+              @keyframes spin {
+                to {
+                  transform: rotate(360deg);
+                }
+              }
+
+              @keyframes pulse {
+                0%,
+                100% {
+                  transform: scale(1);
+                  opacity: 0.2;
+                }
+                50% {
+                  transform: scale(1.5);
+                  opacity: 0.4;
+                }
+              }
+
+              @keyframes slideIn {
+                to {
+                  transform: translateY(0);
+                  opacity: 1;
+                }
+              }
+
+              @keyframes slideInOption {
+                to {
+                  transform: translateX(0);
+                  opacity: 1;
+                }
+              }
+
+              /* Mobile Responsiveness */
+              @media (max-width: 768px) {
+                .quiz-section {
+                  padding: 1rem;
+                }
+
+                .option-label {
+                  padding: 0.8rem;
+                }
+
+                .question-text {
+                  font-size: 1rem;
+                }
+              }
+              .progress-tracker {
+                background: white;
+                border-radius: 15px;
+                padding: 2rem;
+                margin-top: 3rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              }
+
+              .tracker-header {
+                margin-bottom: 2rem;
+              }
+
+              .tracker-header h3 {
+                color: var(--primary);
+                font-size: 1.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              .tracker-header h3 i {
+                color: var(--secondary);
+              }
+
+              .progress-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                margin-bottom: 2rem;
+              }
+
+              .stat-item {
+                background: rgba(55, 166, 184, 0.05);
+                padding: 1.5rem;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+              }
+
+              .stat-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+              }
+
+              .stat-label {
+                color: var(--text-light);
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+
+              .stat-value {
+                font-size: 1.5rem;
+                color: var(--primary);
+                font-weight: 600;
+              }
+
+              .prediction {
+                grid-column: 1 / -1;
+                text-align: center;
+                background: linear-gradient(
+                  135deg,
+                  rgba(55, 166, 184, 0.1),
+                  rgba(45, 64, 89, 0.1)
+                );
+              }
+
+              .prediction-confidence {
+                font-size: 0.9rem;
+                color: var(--text-light);
+                margin-top: 0.5rem;
+              }
+
+              .progress-bar {
+                height: 8px;
+                background: #e1e1e1;
+                border-radius: 4px;
+                overflow: hidden;
+                margin: 0.5rem 0;
+              }
+
+              .progress-fill {
+                height: 100%;
+                background: linear-gradient(
+                  90deg,
+                  var(--secondary),
+                  var(--primary)
+                );
+                transition: width 0.3s ease;
+              }
+
+              .recommendation {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1rem;
+                background: rgba(255, 152, 0, 0.1);
+                border-radius: 8px;
+                color: var(--warning);
+              }
+
+              .recommendation i {
+                font-size: 1.2rem;
+              }
+              .bold-heading {
+    font-weight: bold;
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+            </style>
+          </head>
+          <body>
+            <div class="debug-console"></div>
+
+            <div class="learning-container">
+              <!-- Sidebar Navigation -->
+              <nav class="sidebar">
+                <h1 class="course-title">
+                  {{ course_code.upper() }} - Course Content
+                </h1>
+                <ul class="module-nav">
+                  {% for module in modules %}
+                  <li class="module-nav-item">
+                    <a
+                      href="#module-{{ module.number }}"
+                      class="module-nav-link"
+                      data-module="{{ module.number }}"
+                    >
+                      <i class="fas fa-book module-icon"></i>
+                      Module {{ module.number }}: {{ module.title }}
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </nav>
+
+              <!-- Main Content Area -->
+              <main class="main-content">
+                <!-- First Module -->
+                {% for module in modules[:1] %}
+                <section id="module-{{ module.number }}" class="module">
+                  <div class="module-header">
+                    <h2 class="module-title">
+                      Module {{ module.number }}: {{ module.title }}
+                    </h2>
+                    <p class="module-summary">{{ module.summary }}</p>
+                  </div>
+
+                  <div class="key-points">
+                    <h3 class="key-points-title">
+                      <i class="fas fa-lightbulb"></i>
+                      Key Learning Points
+                    </h3>
+                    <ul class="key-points-list">
+                      {% for point in module.key_points %}
+                      <li>{{ point }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+
+                  <div class="module-content">{{ module.content | safe }}</div>
+
+                  <div class="quiz-section">
+                    <div class="quiz-header">
+                      <h3 class="quiz-title">
+                        <i class="fas fa-brain"></i>
+                        Module Quiz
+                      </h3>
+                      <p class="quiz-description">
+                        Test your knowledge of this module's content
+                      </p>
+                    </div>
+
+                    <div
+                      class="quiz-loading"
+                      id="quiz-loading-{{ module.number }}"
+                    >
+                      <div class="quiz-loading-animation">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-effects">
+                          <span class="effect"></span>
+                          <span class="effect"></span>
+                          <span class="effect"></span>
+                        </div>
+                      </div>
+                      <p class="loading-text">
+                        Creating your quiz questions...
+                      </p>
+                      <p class="loading-subtext">
+                        Tailoring questions to the module content
+                      </p>
+                    </div>
+
+                    <form
+                      class="quiz-form"
+                      data-module="{{ module.number }}"
+                      style="display: none"
+                    >
+                      {% for question in module.quiz %} {% set question_number =
+                      loop.index %}
+                      <div class="quiz-question">
+                        <div class="question-header">
+                          <span class="question-number"
+                            >Question {{ question_number }}</span
+                          >
+                          <div class="question-text">
+                            {{ question.question }}
+                          </div>
+                        </div>
+                        <div class="options-container">
+                          {% for option in question.options %}
+                          <div class="option-item">
+                            <label class="option-label">
+                              <input
+                                type="radio"
+                                name="question_{{ question_number }}"
+                                value="{{ loop.index0 }}"
+                                class="option-radio"
+                                required
+                              />
+                              <span class="radio-custom"></span>
+                              <span class="option-text">{{ option }}</span>
+                            </label>
+                          </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      {% endfor %}
+                      <button type="submit" class="submit-quiz">
+                        <span class="button-content">
+                          <i class="fas fa-check-circle"></i>
+                          Submit Answers
+                        </span>
+                        <span class="button-loading">
+                          <i class="fas fa-spinner fa-spin"></i>
+                          Processing...
+                        </span>
+                      </button>
+                    </form>
+                    <div class="quiz-result"></div>
+                  </div>
+                </section>
+                {% endfor %}
+              </main>
+            </div>
+
+            <script>
+ document.addEventListener('DOMContentLoaded', function() {
+    const moduleContent = document.querySelector('.module-content');
+    const content = moduleContent.innerHTML;
+    const modifiedContent = content.replace(/\*\*(.*?)\*\*/g, '<span class="bold-heading">$1</span>');
+    moduleContent.innerHTML = modifiedContent;
+  });
+              document.addEventListener("DOMContentLoaded", function () {
+                const quizForms = document.querySelectorAll(".quiz-form");
+
+                const courseCode = "{{ course_code }}";
+
+                // Function to show quiz form
+                function showQuizForm(moduleNumber) {
+                  const loadingElement = document.getElementById(
+                    `quiz-loading-${moduleNumber}`
+                  );
+                  const quizForm = document.querySelector(
+                    `.quiz-form[data-module="${moduleNumber}"]`
+                  );
+
+                  if (loadingElement && quizForm) {
+                    loadingElement.style.display = "none";
+                    quizForm.style.display = "block";
+                  }
+                }
+
+                // Show all quiz forms immediately (since content is already loaded)
+                quizForms.forEach((form) => {
+                  const moduleNumber = form.dataset.module;
+                  showQuizForm(moduleNumber);
+                });
+
+                // Update this part in your existing quiz submission handler
+                quizForms.forEach((form) => {
+                  form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const moduleNumber = parseInt(form.dataset.module);
+                    const answers = [];
+
+                    // Get all questions
+                    const questions = form.querySelectorAll(".quiz-question");
+
+                    // Collect answers
+                    questions.forEach((question) => {
+                      const selectedOption = question.querySelector(
+                        'input[type="radio"]:checked'
+                      );
+                      if (selectedOption) {
+                        answers.push(parseInt(selectedOption.value));
+                      }
+                    });
+
+                    // Validate that all questions are answered
+                    if (answers.length !== questions.length) {
+                      showQuizResult(
+                        form,
+                        {
+                          score: 0,
+                          message:
+                            "Please answer all questions before submitting.",
+                        },
+                        true
+                      );
+                      return;
+                    }
+
+                    try {
+                      // Show loading state
+                      const submitButton = form.querySelector(".submit-quiz");
+                      submitButton.disabled = true;
+                      submitButton.innerHTML =
+                        '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                      const response = await fetch(
+                        `/course/${courseCode}/quiz/${moduleNumber}`,
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            answers: answers,
+                          }),
+                        }
+                      );
+
+                      if (!response.ok) {
+                        throw new Error("Failed to submit quiz");
+                      }
+
+                      const result = await response.json();
+
+                      // Show result
+                      showQuizResult(form, result, false);
+
+                      // Show explanations
+                      form.querySelectorAll(".explanation").forEach((exp) => {
+                        exp.style.display = "block";
+                        exp.style.animation = "fadeIn 0.5s ease";
+                      });
+
+                      // Disable form after successful submission
+                      form
+                        .querySelectorAll('input[type="radio"]')
+                        .forEach((input) => {
+                          input.disabled = true;
+                        });
+                      submitButton.innerHTML =
+                        '<i class="fas fa-check-circle"></i> Quiz Completed';
+                      submitButton.classList.add("completed");
+
+                      // Add this line here - Update progress tracker after successful submission
+                      onQuizSubmitted();
+                    } catch (error) {
+                      console.error("Error submitting quiz:", error);
+                      showQuizResult(
+                        form,
+                        {
+                          score: 0,
+                          message: error.message,
+                        },
+                        true
+                      );
+
+                      // Reset submit button
+                      const submitButton = form.querySelector(".submit-quiz");
+                      submitButton.disabled = false;
+                      submitButton.innerHTML =
+                        '<i class="fas fa-check-circle"></i> Submit Quiz';
+                    }
+                  });
+                });
+
+                function showQuizResult(form, result, isError = false) {
+                  const resultDiv = form.nextElementSibling;
+                  resultDiv.className =
+                    "quiz-result " + (isError ? "error" : "success");
+                  resultDiv.style.display = "block";
+
+                  if (isError) {
+                    resultDiv.innerHTML = `
+                      <div class="error-message">
+                          <i class="fas fa-exclamation-circle"></i>
+                          ${
+                            result.message ||
+                            "An error occurred. Please try again."
+                          }
+                      </div>
+                  `;
+                  } else {
+                    resultDiv.innerHTML = `
+                      <div class="success-message">
+                          <i class="fas fa-check-circle"></i>
+                          <div class="score">Score: ${result.score.toFixed(
+                            1
+                          )}%</div>
+                          <div class="feedback">${
+                            result.score >= 70
+                              ? "Great job!"
+                              : "Keep practicing!"
+                          }</div>
+                      </div>
+                  `;
+                  }
+
+                  // Add animation
+                  resultDiv.style.opacity = "0";
+                  resultDiv.style.transform = "translateY(-10px)";
+                  requestAnimationFrame(() => {
+                    resultDiv.style.transition = "all 0.5s ease";
+                    resultDiv.style.opacity = "1";
+                    resultDiv.style.transform = "translateY(0)";
+                  });
+                }
+              });
+            </script>
+          </body>
+        </html>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const quizForms = document.querySelectorAll(".quiz-form");
+        const courseCode = "{{ course_code }}";
+        // Add this to your existing JavaScript
+        function updateProgressTracker() {
+          fetch(`/course/${courseCode}/progress`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                // Update progress bar
+                const progressFill = document.getElementById("overallProgress");
+                const progressText =
+                  progressFill.parentElement.nextElementSibling;
+                progressFill.style.width = `${data.completion_percentage}%`;
+                progressText.textContent = `${Math.round(
+                  data.completion_percentage
+                )}%`;
+
+                // Update average score
+                document.getElementById(
+                  "avgScore"
+                ).textContent = `${data.average_score.toFixed(1)}%`;
+
+                // Update prediction
+                const prediction = data.prediction;
+                document.getElementById("examDate").textContent =
+                  prediction.ready_date;
+                document
+                  .getElementById("confidenceLevel")
+                  .querySelector(
+                    "span"
+                  ).textContent = `${prediction.confidence}%`;
+                document.getElementById("recommendationText").textContent =
+                  prediction.recommendation;
+              } else {
+                document.getElementById("recommendationText").textContent =
+                  data.message;
+              }
+            })
+            .catch((error) => {
+              console.error("Error updating progress:", error);
+            });
+        }
+        function onQuizSubmitted() {
+          updateProgressTracker();
+        }
+        updateProgressTracker();
+
+        // Function to show quiz form
+        function showQuizForm(moduleNumber) {
+          const loadingElement = document.getElementById(
+            `quiz-loading-${moduleNumber}`
+          );
+          const quizForm = document.querySelector(
+            `.quiz-form[data-module="${moduleNumber}"]`
+          );
+
+          if (loadingElement && quizForm) {
+            loadingElement.style.display = "none";
+            quizForm.style.display = "block";
+          }
+        }
+
+        // Show all quiz forms immediately (since content is already loaded)
+        quizForms.forEach((form) => {
+          const moduleNumber = form.dataset.module;
+          showQuizForm(moduleNumber);
+        });
+
+        // Handle quiz submissions
+        quizForms.forEach((form) => {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const moduleNumber = parseInt(form.dataset.module);
+            const answers = [];
+
+            // Get all questions
+            const questions = form.querySelectorAll(".quiz-question");
+
+            // Collect answers
+            questions.forEach((question) => {
+              const selectedOption = question.querySelector(
+                'input[type="radio"]:checked'
+              );
+              if (selectedOption) {
+                answers.push(parseInt(selectedOption.value));
+              }
+            });
+
+            // Validate that all questions are answered
+            if (answers.length !== questions.length) {
+              showQuizResult(
+                form,
+                {
+                  score: 0,
+                  message: "Please answer all questions before submitting.",
+                },
+                true
+              );
+              return;
+            }
+
+            try {
+              // Show loading state
+              const submitButton = form.querySelector(".submit-quiz");
+              submitButton.disabled = true;
+              submitButton.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+              const response = await fetch(
+                `/course/${courseCode}/quiz/${moduleNumber}`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    answers: answers,
+                  }),
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error("Failed to submit quiz");
+              }
+
+              const result = await response.json();
+
+              // Show result
+              showQuizResult(form, result, false);
+
+              // Show explanations
+              form.querySelectorAll(".explanation").forEach((exp) => {
+                exp.style.display = "block";
+                exp.style.animation = "fadeIn 0.5s ease";
+              });
+
+              // Disable form after successful submission
+              form.querySelectorAll('input[type="radio"]').forEach((input) => {
+                input.disabled = true;
+              });
+              submitButton.innerHTML =
+                '<i class="fas fa-check-circle"></i> Quiz Completed';
+              submitButton.classList.add("completed");
+            } catch (error) {
+              console.error("Error submitting quiz:", error);
+              showQuizResult(
+                form,
+                {
+                  score: 0,
+                  message: error.message,
+                },
+                true
+              );
+
+              // Reset submit button
+              const submitButton = form.querySelector(".submit-quiz");
+              submitButton.disabled = false;
+              submitButton.innerHTML =
+                '<i class="fas fa-check-circle"></i> Submit Quiz';
+            }
+          });
+        });
+
+        function showQuizResult(form, result, isError = false) {
+          const resultDiv = form.nextElementSibling;
+          resultDiv.className =
+            "quiz-result " + (isError ? "error" : "success");
+          resultDiv.style.display = "block";
+
+          if (isError) {
+            resultDiv.innerHTML = `
+                      <div class="error-message">
+                          <i class="fas fa-exclamation-circle"></i>
+                          ${
+                            result.message ||
+                            "An error occurred. Please try again."
+                          }
+                      </div>
+                  `;
+          } else {
+            resultDiv.innerHTML = `
+                      <div class="success-message">
+                          <i class="fas fa-check-circle"></i>
+                          <div class="score">Score: ${result.score.toFixed(
+                            1
+                          )}%</div>
+                          <div class="feedback">${
+                            result.score >= 70
+                              ? "Great job!"
+                              : "Keep practicing!"
+                          }</div>
+                      </div>
+                  `;
+          }
+
+          // Add animation
+          resultDiv.style.opacity = "0";
+          resultDiv.style.transform = "translateY(-10px)";
+          requestAnimationFrame(() => {
+            resultDiv.style.transition = "all 0.5s ease";
+            resultDiv.style.opacity = "1";
+            resultDiv.style.transform = "translateY(0)";
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
