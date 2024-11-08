@@ -1,9 +1,5 @@
 from pathlib import Path
-
-# Base directory for course PDFs
 PDF_DIR = Path("app/courses")
-
-# Course configurations
 COURSES = {
     "dp900": {
         "path": PDF_DIR / "test.pdf",

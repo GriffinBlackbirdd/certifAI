@@ -14,17 +14,14 @@ class PriorityContentProcessor:
     async def process_content(self, course_code: str, pdf_content: List[str], style_prompt: str) -> AsyncGenerator[Dict, None]:
         """Process content in priority order"""
         try:
-            # 1. Initial content analysis
             sections = self.analyze_content_sections(pdf_content)
 
-            # 2. Priority classification
             priority_sections = {
                 'high': ['introduction', 'key_concepts', 'core_topics'],
                 'medium': ['examples', 'practice_exercises'],
                 'low': ['additional_reading', 'references']
             }
 
-            # 3. Process high-priority content first
             try:
                 high_priority_content = await self.process_priority_section(
                     sections['high'],
@@ -44,9 +41,7 @@ class PriorityContentProcessor:
                     "section": "core",
                     "error": f"Failed to process core content: {str(e)}"
                 }
-                return  # Stop processing if core content fails
-
-            # 4. Process medium-priority content
+                return
             try:
                 medium_priority_content = await self.process_priority_section(
                     sections['medium'],
@@ -61,10 +56,8 @@ class PriorityContentProcessor:
                 }
             except Exception as e:
                 logging.error(f"Error processing medium priority content: {str(e)}")
-                # Continue with available content even if medium priority fails
                 medium_priority_content = []
 
-            # 5. Queue low-priority content for background processing
             try:
                 self.queue_background_processing(sections['low'], style_prompt)
                 yield {
@@ -73,9 +66,7 @@ class PriorityContentProcessor:
                 }
             except Exception as e:
                 logging.error(f"Error queueing background content: {str(e)}")
-                # Continue without background content
 
-            # 6. Return initial module structure
             try:
                 initial_modules = self.create_initial_modules(
                     high_priority_content,
@@ -100,7 +91,6 @@ class PriorityContentProcessor:
                 "course_code": course_code
             }
         finally:
-            # Cleanup and status update
             self.content_status[f"{course_code}_processing"] = False
             logging.info(f"Completed processing for course: {course_code}")
 
@@ -108,12 +98,11 @@ class PriorityContentProcessor:
         def analyze_content_sections(self, content: List[str]) -> Dict[str, List[str]]:
             """Analyze and categorize content sections by priority"""
             sections = {
-                'high': [],    # Introduction, key concepts
-                'medium': [],  # Examples, exercises
-                'low': []      # Additional material
+                'high': [],
+                'medium': [],
+                'low': []
             }
 
-            # Add your content analysis logic here
             return sections
     async def process_priority_section(self, section_content: List[str], style_prompt: str, progress_message: str):
         """Process a priority section with status updates"""
@@ -123,13 +112,11 @@ class PriorityContentProcessor:
 
             for i, chunk in enumerate(section_content, 1):
                 try:
-                    # Check cache first
                     cache_key = f"{chunk[:50]}_{style_prompt[:50]}"
                     if cache_key in self.cache:
                         processed_content.append(self.cache[cache_key])
                         continue
 
-                    # Process chunk
                     response = await self.llm.ainvoke(self.create_prompt(chunk, style_prompt))
                     self.cache[cache_key] = response
                     processed_content.append(response)
@@ -138,7 +125,6 @@ class PriorityContentProcessor:
 
                 except Exception as e:
                     logging.error(f"Error processing chunk {i}: {str(e)}")
-                    # Continue with next chunk instead of failing entire section
                     continue
 
             return processed_content
@@ -160,7 +146,6 @@ class PriorityContentProcessor:
     def create_initial_modules(self, high_priority: List[str], medium_priority: List[str]) -> List[Dict]:
         """Create initial module structure with available content"""
         modules = []
-        # Create modules from processed content
         return modules
 
     def create_prompt(self, content: str, style_prompt: str) -> str:
@@ -179,5 +164,4 @@ class PriorityContentProcessor:
 
     async def request_section_processing(self, course_code: str, section: str):
         """Handle on-demand processing request for a section"""
-        # Process section if not already processed
         pass

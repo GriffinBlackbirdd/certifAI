@@ -378,7 +378,6 @@
             statusMessage.textContent = `Processing chunk ${data.current_chunk} of ${data.total_chunks}`;
             updateStep(1);
           } else if (data.status === "redirect") {
-            // Redirect to learning page when first module is ready
             window.location.href = data.url;
           } else if (data.status === "error") {
             statusMessage.textContent = `Error: ${data.error}`;

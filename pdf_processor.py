@@ -16,24 +16,14 @@ def setup_logger(course_code: str) -> logging.Logger:
 
     logger = logging.getLogger(f"course_processor_{course_code}")
     logger.setLevel(logging.DEBUG)
-
-    # Clear any existing handlers
     logger.handlers = []
-
-    # Create a unique log file for this processing run
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = logs_dir / f"{course_code}_{timestamp}.log"
-
-    # Create handlers
     file_handler = logging.FileHandler(log_file)
     console_handler = logging.StreamHandler()
-
-    # Create formatters and add it to handlers
     log_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(log_format)
     console_handler.setFormatter(log_format)
-
-    # Add handlers to the logger
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
@@ -49,9 +39,7 @@ class CourseProcessor:
             separators=["\n\n", "\n", ".", "!", "?"]
         )
         self.logger = None
-        self.processing_tasks = {}  # Store background processing tasks
-
-        # Create debug directory for output inspection
+        self.processing_tasks = {}
         self.debug_dir = Path("debug_output")
         self.debug_dir.mkdir(exist_ok=True)
 
@@ -78,30 +66,24 @@ class CourseProcessor:
             self.logger.info(f"Starting to process PDF for course: {course_code}")
             self.save_debug_output(course_code, "style_prompt", style_prompt)
 
-            # Load PDF
             self.logger.info("Loading PDF document")
             loader = PyPDFLoader(str(pdf_path))
             pages = loader.load()
 
-            # Split into introduction/first module and rest
             all_content = [page.page_content for page in pages]
-            first_module = all_content[:2]  # First few pages for quick processing
+            first_module = all_content[:2]
             remaining_content = all_content[2:]
 
-            # Save initial content for debugging
             self.save_debug_output(course_code, "first_module_raw", "\n".join(first_module))
 
-            # Process first module quickly
             self.logger.info("Processing first module")
             first_module_processed = await self.process_quick_module(
                 first_module,
                 style_prompt
             )
 
-            # Save processed first module
             self.save_debug_output(course_code, "first_module_processed", first_module_processed)
 
-            # Generate first module components
             self.logger.info("Generating first module components")
             try:
                 summary = await self._generate_summary(first_module_processed)
@@ -113,7 +95,6 @@ class CourseProcessor:
                 key_points = ["Key points being processed..."]
                 quiz = self._generate_fallback_quiz()
 
-            # Create and return first module
             first_module_data = {
                 "status": "partial",
                 "content": first_module_processed,
@@ -131,7 +112,6 @@ class CourseProcessor:
             self.logger.info("First module processing completed")
             yield first_module_data
 
-            # Start background processing for remaining content
             self.logger.info("Starting background processing")
             self.processing_tasks[course_code] = asyncio.create_task(
                 self.process_remaining_content(remaining_content, style_prompt, course_code)
@@ -177,13 +157,11 @@ class CourseProcessor:
             for i, chunk in enumerate(chunks):
                 self.logger.info(f"Processing chunk {i+1} of {len(chunks)}")
                 try:
-                    # Process chunk
                     response = await self.llm.ainvoke(self.create_prompt(chunk, style_prompt))
                     self.save_debug_output(course_code, f"module_{i+2}_content", response)
 
-                    # Create module
                     module = {
-                        "number": i + 2,  # Start from module 2
+                        "number": i + 2,
                         "title": await self._generate_module_title(response),
                         "content": response,
                         "summary": await self._generate_summary(response),
@@ -198,8 +176,6 @@ class CourseProcessor:
                     )
 
                     processed_modules.append(module)
-
-                    # Update database with new module
                     await self.update_course_content(course_code, module)
 
                 except Exception as e:
@@ -316,6 +292,4 @@ class CourseProcessor:
 
     async def update_course_content(self, course_code: str, new_module: Dict):
         """Placeholder for database update logic"""
-        # This method should be implemented to update the database
-        # with new modules as they're processed
         pass

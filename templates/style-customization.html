@@ -252,9 +252,7 @@
     </style>
   </head>
   <body>
-    <div class="floating-shapes">
-      <!-- Shapes will be added via JavaScript -->
-    </div>
+    <div class="floating-shapes"></div>
 
     <div class="loading-overlay">
       <div class="loading-spinner">
@@ -309,7 +307,6 @@ For example: 'Teach me like a wise wizard in a magical academy, using spells and
     </div>
 
     <script>
-      // Add floating shapes
       const shapesContainer = document.querySelector(".floating-shapes");
       for (let i = 0; i < 30; i++) {
         const shape = document.createElement("div");
@@ -322,7 +319,6 @@ For example: 'Teach me like a wise wizard in a magical academy, using spells and
         shapesContainer.appendChild(shape);
       }
 
-      // Handle suggestion cards
       document.querySelectorAll(".suggestion-card").forEach((card) => {
         card.addEventListener("click", () => {
           const styleInput = document.querySelector(".style-input");
@@ -384,7 +380,6 @@ For example: 'Teach me like a wise wizard in a magical academy, using spells and
           const additionalText =
             "Just return the result without any other text such as - Here is a concise summary (2-3 sentences) of, etc.";
           const courseCode = window.location.pathname.split("/")[2];
-          // Redirect to loading page with the style prompt and additional text
           window.location.href = `/course/${courseCode}/loading?style=${encodeURIComponent(
             stylePrompt
           )}&additional_text=${encodeURIComponent(additionalText)}`;

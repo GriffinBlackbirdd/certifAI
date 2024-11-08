@@ -15,7 +15,6 @@ import asyncio
 from pdf_processor import CourseProcessor
 from langchain.llms import Ollama
 from langchain.embeddings import FastEmbedEmbeddings
-from priority_processor import PriorityContentProcessor
 from pydantic import BaseModel
 from typing import List
 logging.basicConfig(
@@ -43,7 +42,7 @@ templates = Jinja2Templates(directory=str(templates_dir))
 llm = Ollama(model="llama3.2")
 embeddings = FastEmbedEmbeddings()
 course_processor = CourseProcessor(llm, embeddings)
-processor = PriorityContentProcessor(llm, embeddings)
+# processor = PriorityContentProcessor(llm, embeddings)
 
 
 class ConnectionManager:
@@ -76,7 +75,7 @@ def init_database():
     c = conn.cursor()
 
     try:
-        # Create courses table
+        # courses table
         c.execute('''
             CREATE TABLE IF NOT EXISTS courses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,7 +87,7 @@ def init_database():
             )
         ''')
 
-        # Create quiz_scores table
+        # quiz_scores table
         c.execute('''
             CREATE TABLE IF NOT EXISTS quiz_scores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -283,7 +282,6 @@ async def check_processing_status(course_code: str):
     status = await course_processor.get_processing_status(course_code)
     return status
 
-# Add route to request specific section processing
 @app.post("/course/{course_code}/process-section/{section}")
 async def request_section_processing(course_code: str, section: str):
     """Request processing for a specific section"""
@@ -302,7 +300,7 @@ async def learning_page(request: Request, course_code: str):
     """Get current course content"""
     content, modules = get_course_content(course_code)
 
-    # Even if only first module is ready, we can show it
+    # if only first module is ready i am showing it
     if content and modules:
         return templates.TemplateResponse(
             "learning_page.html",
@@ -331,36 +329,28 @@ async def submit_quiz(
         logging.info(f"Received quiz submission for {course_code}, module {module_number}")
         logging.info(f"Answers received: {submission.answers}")
 
-        # Get course content
         content, modules = get_course_content(course_code)
         if not modules:
             raise HTTPException(status_code=404, detail="Course content not found")
 
-        # Parse modules if it's a string
         if isinstance(modules, str):
             modules = json.loads(modules)
 
-        # Find the specific module
         module = next((m for m in modules if m["number"] == module_number), None)
         if not module:
             raise HTTPException(status_code=404, detail="Module not found")
 
-        # Get correct answers from the module's quiz
         correct_answers = [q["correct_answer"] for q in module["quiz"]]
-
-        # Calculate score
         if len(submission.answers) != len(correct_answers):
             raise HTTPException(
                 status_code=400,
                 detail="Number of answers doesn't match number of questions"
             )
 
-        # Calculate percentage score
         score = sum(
             1 for a, c in zip(submission.answers, correct_answers) if a == c
         ) / len(correct_answers) * 100
 
-        # Store score in database
         conn = sqlite3.connect('courses.db')
         try:
             c = conn.cursor()
@@ -402,7 +392,6 @@ async def check_quiz_status(course_code: str, module_number: int):
         logging.error(f"Error checking quiz status: {str(e)}")
         return {"status": "error"}
 
-# Add to main.py
 
 @app.get("/course/{course_code}/modules/status")
 async def check_modules_status(course_code: str):
@@ -426,17 +415,15 @@ async def check_modules_status(course_code: str):
 
         logging.info(f"Found {len(modules)} modules")
 
-        # Check if background processing is complete (more than 1 module)
         if len(modules) > 1:
             logging.info("Additional modules are ready")
-            additional_modules = modules[1:]  # All modules except first
+            additional_modules = modules[1:]  #
             logging.info(f"Sending {len(additional_modules)} additional modules")
             return {
                 "status": "completed",
                 "modules": additional_modules
             }
 
-        # Still processing additional modules
         logging.info("Still processing additional modules")
         return {
             "status": "processing",
@@ -454,8 +441,6 @@ async def check_modules_status(course_code: str):
             "message": "Error checking module status"
         }
 
-# Add these helper functions to main.py
-# Add these helper functions to main.py
 
 def get_module_processing_status(course_code: str) -> dict:
     """Get the current processing status for modules"""
@@ -488,20 +473,18 @@ async def monitor_module_processing(course_code: str):
     """Background task to monitor module processing"""
     while True:
         try:
-            # Check processing status
             status = get_module_processing_status(course_code)
             if not status["is_processing"]:
                 logging.info(f"Module processing completed for {course_code}")
                 break
 
             logging.info(f"Module processing status for {course_code}: {status}")
-            await asyncio.sleep(5)  # Check every 5 seconds
+            await asyncio.sleep(5)  #
 
         except Exception as e:
             logging.error(f"Error monitoring modules for {course_code}: {str(e)}")
             await asyncio.sleep(5)
 
-# Update the WebSocket handler to use these functions
 @app.websocket("/ws/course/{course_code}")
 async def course_processing_websocket(websocket: WebSocket, course_code: str):
     await manager.connect(websocket)
@@ -571,7 +554,6 @@ async def course_processing_websocket(websocket: WebSocket, course_code: str):
                     logging.error(f"Error sending progress: {str(e)}")
                     break
 
-            # Cancel monitoring task when processing is complete
             monitoring_task.cancel()
 
     except WebSocketDisconnect:
@@ -600,36 +582,29 @@ def calculate_exam_readiness(scores: List[float], weights: List[float] = None) -
             "recommendation": "Complete more quizzes to get a prediction"
         }
 
-    # Prior beliefs
+    # some prior beliefs
     prior_mean = 70  # Expected passing score
-    prior_std = 10   # Uncertainty in prior
-
-    # If no weights provided, use recency weights
+    prior_std = 10   # Uncertainty
+    # if no weights provided i will use recency weights
     if weights is None:
         weights = [1 + i/len(scores) for i in range(len(scores))]
-
-    # Calculate weighted mean and std of scores
+    # weighted mean and std of scores
     weighted_scores = np.array(scores) * np.array(weights)
     mean_score = np.average(weighted_scores)
     std_score = np.std(scores) if len(scores) > 1 else 15
-
-    # Bayesian update
+    # bayesian update
     posterior_var = 1 / (1/prior_std**2 + 1/std_score**2)
     posterior_mean = posterior_var * (prior_mean/prior_std**2 + mean_score/std_score**2)
-
-    # Calculate confidence level (0-100)
+    # confidence level (0-100)
     confidence = min(100, (mean_score/posterior_mean * 100))
-
-    # Estimate days needed based on current performance
+    # days needed based on current performance
     score_gap = max(0, prior_mean - posterior_mean)
     base_days = 30  # Base preparation time
     additional_days = int(score_gap * 0.7)  # 0.7 days per point needed
     total_days = base_days + additional_days
 
-    # Calculate ready date
+    # ready date
     ready_date = datetime.now() + timedelta(days=total_days)
-
-    # Generate recommendation
     if confidence > 80:
         recommendation = "You're on track! Keep up the good work."
     elif confidence > 60:
@@ -644,12 +619,10 @@ def calculate_exam_readiness(scores: List[float], weights: List[float] = None) -
         "days_needed": total_days
     }
 
-# Add this endpoint
 @app.get("/course/{course_code}/progress")
 async def get_course_progress(course_code: str):
     """Get course progress and exam prediction"""
     try:
-        # Get quiz scores from database
         conn = sqlite3.connect('courses.db')
         c = conn.cursor()
         c.execute('''

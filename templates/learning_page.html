@@ -612,12 +612,16 @@
                 }
               }
               .progress-tracker {
-                background: white;
-                border-radius: 15px;
-                padding: 2rem;
-                margin-top: 3rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-              }
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  margin-top: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: sticky;
+  top: 2rem;
+  z-index: 10;
+}
 
               .tracker-header {
                 margin-bottom: 2rem;
@@ -863,8 +867,11 @@
  document.addEventListener('DOMContentLoaded', function() {
     const moduleContent = document.querySelector('.module-content');
     const content = moduleContent.innerHTML;
-    const modifiedContent = content.replace(/\*\*(.*?)\*\*/g, '<span class="bold-heading">$1</span>');
-    moduleContent.innerHTML = modifiedContent;
+    const modifiedContent = content.replace(/\*\*(.*?)\*\*/g, '<span class="bold-heading">$1</span>')
+                              .replace(/(##+)\s*(.*?)\s*:/g, (match, hashTags, heading) => {
+                                 const headingLevel = hashTags.length;
+                                 return `${hashTags} ${heading}`;
+                              });    moduleContent.innerHTML = modifiedContent;
   });
               document.addEventListener("DOMContentLoaded", function () {
                 const quizForms = document.querySelectorAll(".quiz-form");
